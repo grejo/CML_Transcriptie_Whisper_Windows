@@ -4,6 +4,17 @@ Must be imported BEFORE any whisperx, pyannote, or huggingface imports.
 """
 
 import sys
+import warnings
+import logging
+
+
+def suppress_warnings():
+    """Suppress noisy deprecation warnings from torchaudio, pyannote, and Lightning."""
+    warnings.filterwarnings("ignore", message=".*torchaudio.*deprecated.*")
+    warnings.filterwarnings("ignore", message=".*upgrade_checkpoint.*")
+    warnings.filterwarnings("ignore", message=".*list_audio_backends.*")
+    for name in ("pytorch_lightning", "lightning", "lightning_fabric"):
+        logging.getLogger(name).setLevel(logging.ERROR)
 
 
 def apply_huggingface_patch():
@@ -50,5 +61,6 @@ def apply_pytorch_patch():
 
 
 # Apply immediately on import
+suppress_warnings()
 apply_huggingface_patch()
 apply_pytorch_patch()
